@@ -37,6 +37,8 @@ describe("TransformTableDataIntoArrayOfArray", () => {
   const columns: TableColumnProps[] = [
     {
       Header: "Id",
+      id: "id",
+      alias: "id",
       accessor: "id",
       minWidth: 60,
       draggable: true,
