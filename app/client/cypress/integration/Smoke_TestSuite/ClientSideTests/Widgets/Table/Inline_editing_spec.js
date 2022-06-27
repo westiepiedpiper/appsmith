@@ -156,10 +156,6 @@ describe("Table widget inline editing functionality", () => {
         expected: "be.disabled",
       },
       {
-        columnType: "Edit Actions",
-        expected: "be.disabled",
-      },
-      {
         columnType: "Plain Text",
         expected: "not.be.disabled",
       },
@@ -214,10 +210,6 @@ describe("Table widget inline editing functionality", () => {
       },
       {
         columnType: "Icon Button",
-        expected: "not.exist",
-      },
-      {
-        columnType: "Edit Actions",
         expected: "not.exist",
       },
       {
@@ -330,21 +322,14 @@ describe("Table widget inline editing functionality", () => {
     cy.saveTableCellValue(0, 0);
     cy.get(".t--widget-textwidget .bp3-ui-text").should(
       "contain",
-      `[  {    "index": 0,    "updatedFields": {      "step": "newValue"    },    "allFields": {      "step": "newValue",      "task": "Drop a table",      "status": "✅",      "action": ""    }  }]`,
-    );
-    cy.editTableCell(0, 1);
-    cy.enterTableCellValue(0, 1, "newValue");
-    cy.saveTableCellValue(0, 1);
-    cy.get(".t--widget-textwidget .bp3-ui-text").should(
-      "contain",
-      `[  {    "index": 0,    "updatedFields": {      "step": "newValue"    },    "allFields": {      "step": "newValue",      "task": "Drop a table",      "status": "✅",      "action": ""    }  },  {    "index": 1,    "updatedFields": {      "step": "newValue"    },    "allFields": {      "step": "newValue",      "task": "Create a query fetch_users with the Mock DB",      "status": "--",      "action": ""    }  }]`,
+      `[  {    "index": 0,    "updatedFields": {      "step": "newValue"    },    "allFields": {      "step": "newValue",      "task": "Drop a table",      "status": "✅",      "action": "",      "EditActions1": ""    }  }]`,
     );
     cy.openPropertyPane("textwidget");
     cy.updateCodeInput(
       ".t--property-control-text",
       `{{Table1.updatedRowIndices}}`,
     );
-    cy.get(".t--widget-textwidget .bp3-ui-text").should("contain", "[  0,  1]");
+    cy.get(".t--widget-textwidget .bp3-ui-text").should("contain", "[  0]");
   });
 
   it("should check that onsubmit event is available for the columns that are editable", () => {
@@ -381,10 +366,6 @@ describe("Table widget inline editing functionality", () => {
       },
       {
         columnType: "Icon Button",
-        expected: "not.exist",
-      },
-      {
-        columnType: "Edit Actions",
         expected: "not.exist",
       },
       {
@@ -438,10 +419,6 @@ describe("Table widget inline editing functionality", () => {
       },
       {
         columnType: "Icon Button",
-        expected: "not.exist",
-      },
-      {
-        columnType: "Edit Actions",
         expected: "not.exist",
       },
       {
@@ -511,53 +488,12 @@ describe("Table widget inline editing functionality", () => {
       });
   });
 
-  it("should check that edit action column type is available to be choosen", () => {
-    cy.openPropertyPane("tablewidgetv2");
-    cy.editColumn("action");
-    cy.changeColumnType("Edit Actions");
-    cy.get(
-      "[data-colindex='3'][data-rowindex='0'] button span:contains('Save')",
-    ).should("exist");
-    cy.get(
-      "[data-colindex='3'][data-rowindex='0'] button span:contains('Discard')",
-    ).should("exist");
-  });
-
-  it("should check that onSubmit event in not triggered when an edit action column is present", () => {
-    cy.openPropertyPane("tablewidgetv2");
-    cy.makeColumnEditable("step");
-    cy.editColumn("step");
-    cy.get(".t--property-control-onsubmit .t--js-toggle").click();
-    cy.updateCodeInput(
-      ".t--property-control-onsubmit",
-      `{{storeValue('test', Table1.triggeredRow.step)}}`,
-    );
-    cy.dragAndDropToCanvas("textwidget", { x: 300, y: 500 });
-    cy.openPropertyPane("textwidget");
-    cy.updateCodeInput(".t--property-control-text", `{{appsmith.store.test}}`);
-    cy.openPropertyPane("tablewidgetv2");
-    cy.editColumn("action");
-    cy.changeColumnType("Edit Actions");
-
-    cy.editTableCell(0, 0);
-    cy.enterTableCellValue(0, 0, "NewValue");
-    cy.saveTableCellValue(0, 0);
-    cy.wait(1000);
-    cy.get(".t--text-widget-container .bp3-ui-text").should(
-      "not.contain",
-      "NewValue",
-    );
-  });
-
   it("should check that onSave is working", () => {
     cy.openPropertyPane("tablewidgetv2");
     cy.makeColumnEditable("step");
-    cy.editColumn("action");
-    cy.changeColumnType("Edit Actions");
-    cy.get(".t--property-pane-section-collapse-savebuttonproperties").click();
-    cy.get(
-      ".t--property-pane-section-collapse-discardbuttonproperties",
-    ).click();
+    cy.editColumn("EditActions1");
+    cy.get(".t--property-pane-section-collapse-savebutton").click();
+    cy.get(".t--property-pane-section-collapse-discardbutton").click();
     cy.get(".t--property-control-onsave .t--open-dropdown-Select-Action")
       .last()
       .click();
@@ -566,7 +502,7 @@ describe("Table widget inline editing functionality", () => {
     cy.editTableCell(0, 0);
     cy.enterTableCellValue(0, 0, "NewValue");
     cy.openPropertyPane("tablewidgetv2");
-    cy.saveTableRow(3, 0);
+    cy.saveTableRow(4, 0);
     cy.get(widgetsPage.toastAction).should("be.visible");
     cy.get(widgetsPage.toastActionText)
       .last()
@@ -579,12 +515,9 @@ describe("Table widget inline editing functionality", () => {
   it("should check that onSave events has access to edit values through triggeredRow", () => {
     cy.openPropertyPane("tablewidgetv2");
     cy.makeColumnEditable("step");
-    cy.editColumn("action");
-    cy.changeColumnType("Edit Actions");
-    cy.get(".t--property-pane-section-collapse-savebuttonproperties").click();
-    cy.get(
-      ".t--property-pane-section-collapse-discardbuttonproperties",
-    ).click();
+    cy.editColumn("EditActions1");
+    cy.get(".t--property-pane-section-collapse-savebutton").click();
+    cy.get(".t--property-pane-section-collapse-discardbutton").click();
     cy.get(".t--property-control-onsave .t--open-dropdown-Select-Action")
       .last()
       .click();
@@ -596,7 +529,7 @@ describe("Table widget inline editing functionality", () => {
     cy.editTableCell(0, 0);
     cy.enterTableCellValue(0, 0, "NewValue");
     cy.openPropertyPane("tablewidgetv2");
-    cy.saveTableRow(3, 0);
+    cy.saveTableRow(4, 0);
     cy.get(widgetsPage.toastAction).should("be.visible");
     cy.get(widgetsPage.toastActionText)
       .last()
@@ -609,12 +542,9 @@ describe("Table widget inline editing functionality", () => {
   it("should check that onDiscard event is working", () => {
     cy.openPropertyPane("tablewidgetv2");
     cy.makeColumnEditable("step");
-    cy.editColumn("action");
-    cy.changeColumnType("Edit Actions");
-    cy.get(".t--property-pane-section-collapse-savebuttonproperties").click();
-    cy.get(
-      ".t--property-pane-section-collapse-discardbuttonproperties",
-    ).click();
+    cy.editColumn("EditActions1");
+    cy.get(".t--property-pane-section-collapse-savebutton").click();
+    cy.get(".t--property-pane-section-collapse-discardbutton").click();
     cy.get(".t--property-control-ondiscard .t--open-dropdown-Select-Action")
       .last()
       .click();
@@ -623,7 +553,7 @@ describe("Table widget inline editing functionality", () => {
     cy.editTableCell(0, 0);
     cy.enterTableCellValue(0, 0, "NewValue");
     cy.openPropertyPane("tablewidgetv2");
-    cy.discardTableRow(3, 0);
+    cy.discardTableRow(4, 0);
     cy.get(widgetsPage.toastAction).should("be.visible");
     cy.get(widgetsPage.toastActionText)
       .last()

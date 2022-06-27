@@ -46,8 +46,6 @@ describe("TransformTableDataIntoArrayOfArray", () => {
         isHidden: false,
         type: "string",
       },
-      id: "id",
-      alias: "id",
       columnProperties: {
         id: "id",
         originalId: "id",

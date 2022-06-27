@@ -39,6 +39,7 @@
             "verticalAlignment":"CENTER",
             "totalRecordsCount":0,
             "defaultPageSize":0,
+            "inlineEditingSaveOption": "ROW_LEVEL",
             "dynamicBindingPathList":[
                {
                   "key":"primaryColumns.step.computedValue"
