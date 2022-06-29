@@ -254,7 +254,8 @@ export function* handleFetchedPage({
     });
 
     if (willPageBeMigrated) {
-      yield put(saveLayout());
+      call(populatePageDSLsSaga);
+      // yield put(saveLayout());
     }
   }
 }
