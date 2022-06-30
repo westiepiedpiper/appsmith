@@ -229,14 +229,101 @@ describe("Table widget inline editing functionality", () => {
     });
   });
 
-  // it.only("should check that turning on editablilty for a column shows a edit icon when hovered on any cell of the corresponding column", () => {
-  //   cy.openPropertyPane("tablewidgetv2");
-  //   cy.get('[data-rbd-draggable-id="step"] .t--card-checkbox input+span').click();
-  //   cy.wait(1000);
-  //   cy.hoverTableCell(0, 0);
-  //   cy.get("[data-colindex=0][data-rowindex=0] .t--editable-cell-icon").should("have.css", "display", "block");
-  //   cy.wait(30000);
-  // });
+  it("should check that inline save option is shown only when a column is made editable", () => {
+    cy.openPropertyPane("tablewidgetv2");
+    cy.get(".t--property-control-updatemode").should("not.exist");
+    cy.makeColumnEditable("step");
+    cy.get(".t--property-control-updatemode").should("exist");
+    cy.makeColumnEditable("step");
+    cy.get(".t--property-control-updatemode").should("exist");
+
+    cy.dragAndDropToCanvas("textwidget", { x: 300, y: 600 });
+    cy.openPropertyPane("textwidget");
+    cy.updateCodeInput(
+      ".t--property-control-text",
+      `{{Table1.inlineEditingSaveOption}}`,
+    );
+    cy.get(".t--widget-textwidget .bp3-ui-text").should("contain", "ROW_LEVEL");
+  });
+
+  it("should check that save/discard column is added when a column is made editable and removed when made uneditable", () => {
+    cy.openPropertyPane("tablewidgetv2");
+    cy.makeColumnEditable("step");
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("exist");
+    cy.get("[data-rbd-draggable-id='EditActions1'] input[type='text']").should(
+      "contain.value",
+      "Save / Discard",
+    );
+    cy.makeColumnEditable("step");
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+
+    cy.get(
+      `.t--property-control-columns .t--uber-editable-checkbox input+span`,
+    ).click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("exist");
+    cy.get("[data-rbd-draggable-id='EditActions1'] input[type='text']").should(
+      "contain.value",
+      "Save / Discard",
+    );
+    cy.get(
+      `.t--property-control-columns .t--uber-editable-checkbox input+span`,
+    ).click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+
+    cy.editColumn("step");
+    cy.get(".t--property-control-editable .bp3-switch span").click();
+    cy.get(".t--property-pane-back-btn").click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("exist");
+    cy.get("[data-rbd-draggable-id='EditActions1'] input[type='text']").should(
+      "contain.value",
+      "Save / Discard",
+    );
+    cy.editColumn("step");
+    cy.get(".t--property-control-editable .bp3-switch span").click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+  });
+
+  it.only("should check that save/discard column is added/removed when inline save option is changed", () => {
+    cy.openPropertyPane("tablewidgetv2");
+    cy.makeColumnEditable("step");
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("exist");
+    cy.get(".t--property-control-updatemode .bp3-popover-target")
+      .last()
+      .click();
+    cy.get(".t--dropdown-option")
+      .children()
+      .contains("Custom")
+      .click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+    cy.makeColumnEditable("task");
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+    cy.get(".t--property-control-updatemode .bp3-popover-target")
+      .last()
+      .click();
+    cy.get(".t--dropdown-option")
+      .children()
+      .contains("Row level")
+      .click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("exist");
+    cy.get(".t--property-control-updatemode .bp3-popover-target")
+      .last()
+      .click();
+    cy.get(".t--dropdown-option")
+      .children()
+      .contains("Custom")
+      .click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+    cy.makeColumnEditable("step");
+    cy.makeColumnEditable("task");
+    cy.get(".t--property-control-updatemode .bp3-popover-target")
+      .last()
+      .click();
+    cy.get(".t--dropdown-option")
+      .children()
+      .contains("Row level")
+      .click();
+    cy.get("[data-rbd-draggable-id='EditActions1']").should("not.exist");
+  });
 
   it("should check that cell of an editable column is editable", () => {
     cy.openPropertyPane("tablewidgetv2");
